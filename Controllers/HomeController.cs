@@ -51,6 +51,52 @@ namespace Mahmoud_Restaurant.Controllers
             return Ok(new { Token = token });
         }
 
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                // Get the current user's email from the JWT claims
+                var userEmail = User.FindFirst(ClaimTypes.Name)?.Value;
+                var jti = User.FindFirst("jti")?.Value;
+                if (string.IsNullOrEmpty(userEmail) || string.IsNullOrEmpty(jti))
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                // Fetch user details from the database
+                var user = await _authService.Authorize(userEmail);
+                if (user == null)
+                {
+                    return NotFound("Already Logged out.");
+                }
+
+                // Extract the token from the Authorization header
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    return BadRequest(new { message = "Token is missing." });
+                }
+
+                try
+                {
+                    _authService.BlacklistToken(token); // Call the BlacklistToken method
+                    return Ok(new { message = "Logout successful" });
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { error = ex.Message });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         [HttpGet("profile")]
         [Authorize] // Requires user to be authenticated
         public async Task<IActionResult> GetProfile()

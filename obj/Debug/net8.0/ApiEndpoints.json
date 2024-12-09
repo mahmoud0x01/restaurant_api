@@ -17,6 +17,16 @@
   },
   {
     "ContainingType": "Mahmoud_Restaurant.Controllers.AuthController",
+    "Method": "Logout",
+    "RelativePath": "api/Auth/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Mahmoud_Restaurant.Controllers.AuthController",
     "Method": "GetProfile",
     "RelativePath": "api/Auth/profile",
     "HttpMethod": "GET",

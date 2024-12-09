@@ -2,6 +2,7 @@
 using Mahmoud_Restaurant.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -13,12 +14,14 @@ public class AuthService
     private readonly ApplicationDbContext _context;
     private readonly string _jwtSecret;
     private readonly string _adminSecretKey;
+    private readonly ConcurrentDictionary<string, DateTime> _tokenBlacklist;
 
-    public AuthService(ApplicationDbContext context, string jwtSecret,string adminSecretKey)
+    public AuthService(ApplicationDbContext context, string jwtSecret, string adminSecretKey, ConcurrentDictionary<string, DateTime> tokenBlacklist)
     {
         _context = context;
         _jwtSecret = jwtSecret;
         _adminSecretKey = adminSecretKey;
+        _tokenBlacklist = tokenBlacklist;
     }
 
     public async Task<User> Register(UserDto userDto, string adminSecretKey = null)
@@ -28,6 +31,7 @@ public class AuthService
         {
             throw new ArgumentException("Invalid email format.");
         }
+
         // Check if the username already exists
         var existingUser = await _context.Users.SingleOrDefaultAsync(u => u.Email == userDto.Email);
         if (existingUser != null)
@@ -44,7 +48,7 @@ public class AuthService
         // Determine the user role
         var isAdmin = !string.IsNullOrEmpty(adminSecretKey) && adminSecretKey == _adminSecretKey;
 
-        var passwordHash = HashPassword(userDto.Password); // Use SHA-256 for hashing
+        var passwordHash = HashPassword(userDto.Password);
 
         var user = new User
         {
@@ -55,7 +59,7 @@ public class AuthService
             BirthDate = userDto.BirthDate,
             Gender = userDto.Gender,
             PhoneNumber = userDto.PhoneNumber,
-            IsAdmin = isAdmin // Set the admin status based on the adminSecretKey
+            IsAdmin = isAdmin
         };
 
         _context.Users.Add(user);
@@ -72,13 +76,12 @@ public class AuthService
         }
 
         return existingUser;
+    }
 
-}
-
-        public async Task<string> Login(LoginDto loginDto)
+    public async Task<string> Login(LoginDto loginDto)
     {
         var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginDto.Email);
-        if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash)) // Use SHA-256 for verification
+        if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
             return null;
 
         var key = GenerateSymmetricSecurityKey(_jwtSecret);
@@ -86,7 +89,11 @@ public class AuthService
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, user.Email) }),
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Unique token ID
+            }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
         };
@@ -95,11 +102,36 @@ public class AuthService
         return tokenHandler.WriteToken(token);
     }
 
+    public void BlacklistToken(string token)
+    {
+        var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+        if (jwtTokenHandler.CanReadToken(token))
+        {
+            var jwtToken = jwtTokenHandler.ReadJwtToken(token);
+            var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+            var expiry = jwtToken.ValidTo;
+
+            if (!string.IsNullOrEmpty(jti))
+            {
+                _tokenBlacklist[jti] = expiry;
+            }
+        }
+        else
+        {
+            throw new ArgumentException("Invalid token.");
+        }
+    }
+
+    public bool IsTokenBlacklisted(string jti)
+    {
+        return _tokenBlacklist.ContainsKey(jti);
+    }
+
     private SymmetricSecurityKey GenerateSymmetricSecurityKey(string secret)
     {
-        // Ensure that the key length is at least 128 bits
         var keyBytes = Encoding.UTF8.GetBytes(secret);
-        if (keyBytes.Length < 128 / 8) // 128 bits in bytes (16 bytes)
+        if (keyBytes.Length < 128 / 8)
         {
             throw new ArgumentOutOfRangeException(nameof(secret), "Key length must be at least 128 bits.");
         }
@@ -113,8 +145,7 @@ public class AuthService
             var salt = GenerateSalt();
             var saltedPassword = salt.Concat(Encoding.UTF8.GetBytes(password)).ToArray();
             var hashBytes = sha256.ComputeHash(saltedPassword);
-            var hash = Convert.ToBase64String(hashBytes);
-            return $"{Convert.ToBase64String(salt)}:{hash}"; // Return both salt and hash
+            return $"{Convert.ToBase64String(salt)}:{Convert.ToBase64String(hashBytes)}";
         }
     }
 
@@ -137,9 +168,11 @@ public class AuthService
 
     private byte[] GenerateSalt()
     {
-        var randomNumberGenerator = RandomNumberGenerator.Create();
         var salt = new byte[16];
-        randomNumberGenerator.GetBytes(salt);
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(salt);
+        }
         return salt;
     }
 }

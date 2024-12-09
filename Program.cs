@@ -2,13 +2,12 @@
 using Mahmoud_Restaurant.Configurations;
 using Mahmoud_Restaurant.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
-using NSwag.Generation.Processors;
-using NSwag.Generation.Processors.Contexts;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 
@@ -22,30 +21,38 @@ builder.Services.AddControllers();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
+builder.Services.AddSingleton(new ConcurrentDictionary<string, DateTime>()); // For token blacklist
 builder.Services.AddScoped<AuthService>((serviceProvider) =>
 {
     var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
     var jwtSecret = builder.Configuration.GetValue<string>("JwtSettings:Secret");
     var adminSecretKey = builder.Configuration.GetValue<string>("Admin:Secret");
-    return new AuthService(context, jwtSecret, adminSecretKey);
+    var tokenBlacklist = serviceProvider.GetRequiredService<ConcurrentDictionary<string, DateTime>>();
+    return new AuthService(context, jwtSecret, adminSecretKey, tokenBlacklist);
 });
 
+// Token Validation with Blacklist Check
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            // Example of accessing AuthService for custom validation
+            LifetimeValidator = (notBefore, expires, token, parameters) =>
+            {
+                var serviceProvider = builder.Services.BuildServiceProvider();
+                var authService = serviceProvider.GetRequiredService<AuthService>();
+                // Use authService to validate if token is blacklisted
+                return !authService.IsTokenBlacklisted(token.Id);
+            }
+        };
+    });
+
+// Configure Swagger/OpenAPI
 builder.Services.AddOpenApiDocument(config =>
 {
     config.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
