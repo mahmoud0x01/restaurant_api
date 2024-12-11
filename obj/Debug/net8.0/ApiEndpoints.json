@@ -1,8 +1,8 @@
 [
   {
-    "ContainingType": "Mahmoud_Restaurant.Controllers.AuthController",
+    "ContainingType": "Mahmoud_Restaurant.Controllers.AccountController",
     "Method": "Login",
-    "RelativePath": "api/Auth/login",
+    "RelativePath": "api/Account/login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -16,9 +16,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Mahmoud_Restaurant.Controllers.AuthController",
+    "ContainingType": "Mahmoud_Restaurant.Controllers.AccountController",
     "Method": "Logout",
-    "RelativePath": "api/Auth/logout",
+    "RelativePath": "api/Account/logout",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -26,9 +26,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Mahmoud_Restaurant.Controllers.AuthController",
+    "ContainingType": "Mahmoud_Restaurant.Controllers.AccountController",
     "Method": "GetProfile",
-    "RelativePath": "api/Auth/profile",
+    "RelativePath": "api/Account/profile",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -36,9 +36,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Mahmoud_Restaurant.Controllers.AuthController",
+    "ContainingType": "Mahmoud_Restaurant.Controllers.AccountController",
     "Method": "Register",
-    "RelativePath": "api/Auth/register",
+    "RelativePath": "api/Account/register",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -55,5 +55,161 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Mahmoud_Restaurant.Controllers.DishController",
+    "Method": "GetDishes",
+    "RelativePath": "api/Dish",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categories",
+        "Type": "System.Collections.Generic.List\u00601[[Mahmoud_Restaurant.Controllers.DishCategory, Mahmoud_Restaurant, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "vegetarian",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "sorting",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Mahmoud_Restaurant.Controllers.DishController",
+    "Method": "AddDish",
+    "RelativePath": "api/Dish",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Price",
+        "Type": "System.Double",
+        "IsRequired": false
+      },
+      {
+        "Name": "Image",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Vegetarian",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Rating",
+        "Type": "System.Nullable\u00601[[System.Double, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Category",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Mahmoud_Restaurant.Controllers.DishController",
+    "Method": "Get",
+    "RelativePath": "api/Dish/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Mahmoud_Restaurant.Controllers.DishController",
+    "Method": "Post",
+    "RelativePath": "api/Dish/{id}/rating",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "value",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "id",
+        "Type": "",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Mahmoud_Restaurant.Controllers.DishController",
+    "Method": "Get_Check",
+    "RelativePath": "api/Dish/{id}/rating/check",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   }
 ]

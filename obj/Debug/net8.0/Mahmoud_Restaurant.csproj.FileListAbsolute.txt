@@ -157,3 +157,4 @@ C:\Users\MahmoudAdel\source\repos\Mahmoud_Restaurant\Mahmoud_Restaurant\bin\Debu
 C:\Users\MahmoudAdel\source\repos\Mahmoud_Restaurant\Mahmoud_Restaurant\bin\Debug\net8.0\NSwag.Generation.AspNetCore.dll
 C:\Users\MahmoudAdel\source\repos\Mahmoud_Restaurant\Mahmoud_Restaurant\bin\Debug\net8.0\YamlDotNet.dll
 C:\Users\MahmoudAdel\source\repos\Mahmoud_Restaurant\Mahmoud_Restaurant\obj\Debug\net8.0\Mahmoud_Restaurant.sourcelink.json
+C:\Users\MahmoudAdel\source\repos\Mahmoud_Restaurant\Mahmoud_Restaurant\bin\Debug\net8.0\Swashbuckle.AspNetCore.Annotations.dll

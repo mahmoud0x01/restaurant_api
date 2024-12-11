@@ -6,14 +6,13 @@ using System.Security.Claims;
 
 namespace Mahmoud_Restaurant.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private readonly AuthService _authService;
 
-        public AuthController(AuthService authService)
+        public AccountController(AuthService authService)
         {
             _authService = authService;
         }

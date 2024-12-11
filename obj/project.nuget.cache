@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ZCjsXu6ZBUU=",
+  "dgSpecHash": "2DO/aez/Cmg=",
   "success": true,
   "projectFilePath": "C:\\Users\\MahmoudAdel\\source\\repos\\Mahmoud_Restaurant\\Mahmoud_Restaurant\\Mahmoud_Restaurant.csproj",
   "expectedPackageFiles": [
@@ -60,8 +60,9 @@
     "C:\\Users\\MahmoudAdel\\.nuget\\packages\\nswag.generation.aspnetcore\\14.2.0\\nswag.generation.aspnetcore.14.2.0.nupkg.sha512",
     "C:\\Users\\MahmoudAdel\\.nuget\\packages\\portable.bouncycastle\\1.9.0\\portable.bouncycastle.1.9.0.nupkg.sha512",
     "C:\\Users\\MahmoudAdel\\.nuget\\packages\\swashbuckle.aspnetcore\\7.1.0\\swashbuckle.aspnetcore.7.1.0.nupkg.sha512",
-    "C:\\Users\\MahmoudAdel\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\7.1.0\\swashbuckle.aspnetcore.swagger.7.1.0.nupkg.sha512",
-    "C:\\Users\\MahmoudAdel\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\7.1.0\\swashbuckle.aspnetcore.swaggergen.7.1.0.nupkg.sha512",
+    "C:\\Users\\MahmoudAdel\\.nuget\\packages\\swashbuckle.aspnetcore.annotations\\7.2.0\\swashbuckle.aspnetcore.annotations.7.2.0.nupkg.sha512",
+    "C:\\Users\\MahmoudAdel\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\7.2.0\\swashbuckle.aspnetcore.swagger.7.2.0.nupkg.sha512",
+    "C:\\Users\\MahmoudAdel\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\7.2.0\\swashbuckle.aspnetcore.swaggergen.7.2.0.nupkg.sha512",
     "C:\\Users\\MahmoudAdel\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\7.1.0\\swashbuckle.aspnetcore.swaggerui.7.1.0.nupkg.sha512",
     "C:\\Users\\MahmoudAdel\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\MahmoudAdel\\.nuget\\packages\\system.collections.immutable\\7.0.0\\system.collections.immutable.7.0.0.nupkg.sha512",
