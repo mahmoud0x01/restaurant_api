@@ -107,20 +107,85 @@ namespace Mahmoud_Restaurant.Controllers
 
         // GET api/<<Dish>>/{id}
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return "value";
+            if (id == Guid.Empty || !Guid.TryParse(id.ToString(), out _))
+            {
+                // Return a specific bad request response when the GUID is empty or invalid
+                return BadRequest("Invalid ID format.");
+            }
+
+            try
+            {
+                var dish = await _dishService.GetDishByIdAsync(id);
+                if (dish != null)
+                {
+                    return Ok(dish);
+                }
+                else
+                {
+                    return NotFound("Dish does not exist");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound("Dish does not exist");
+            }
         }
         // GET api/<Dish>/{id}/rating/check
         [HttpGet("{id}/rating/check")]
-        public string Get_Check(int id)
+        public async Task<IActionResult> Get_Check(Guid id)
         {
-            return "value";
+            if (id == Guid.Empty || !Guid.TryParse(id.ToString(), out _))
+            {
+                // Return a specific bad request response when the GUID is empty or invalid
+                return BadRequest("Invalid ID format.");
+            }
+
+            try
+            {
+                var dish = await _dishService.GetDishByIdAsync(id);
+                if (dish != null)
+                {
+                    return Ok(dish.Rating);
+                }
+                else
+                {
+                    return NotFound("Dish does not exist");
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound("Dish does not exist");
+            }
         }
         // POST api/<Dish>/{id}/rating
         [HttpPost("{id}/rating")]
-        public void Post([FromBody] string value)
+        [Authorize] // Ensures the user is authenticated
+        public async Task<IActionResult> SetRating(Guid id, [FromBody] int score)
         {
+            var userEmail = User.Identity?.Name;
+            if (userEmail == null)
+                return Unauthorized("User is not authenticated.");
+            var user = await _authService.Authorize(userEmail);
+            if (user == null)
+            {
+                return NotFound("User not found or not Authorized.");
+            }
+            try
+            {
+                var userId = user.Id;
+                await _dishService.SetRatingAsync(id, userId, score);
+                return Ok("Rating set successfully.");
+            }
+            catch (InvalidOperationException)
+            {
+                return Unauthorized("User has already rated this dish.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
         [HttpPut] // PUT api/<Dish>/AddDish
         [Authorize] // Ensures the user is authenticated

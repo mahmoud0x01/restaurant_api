@@ -57,6 +57,29 @@ namespace Mahmoud_Restaurant.Migrations
                     b.ToTable("Dishes");
                 });
 
+            modelBuilder.Entity("Mahmoud_Restaurant.Models.Rating", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DishId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("RatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ratings");
+                });
+
             modelBuilder.Entity("Mahmoud_Restaurant.Models.User", b =>
                 {
                     b.Property<int>("Id")

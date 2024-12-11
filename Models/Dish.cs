@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace Mahmoud_Restaurant.Models
 {
@@ -33,5 +34,4 @@ namespace Mahmoud_Restaurant.Models
         Dessert,
         Drink
     }
-
 }

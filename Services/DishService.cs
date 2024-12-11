@@ -70,4 +70,62 @@ public class DishService
     {
         return await _context.Dishes.FirstOrDefaultAsync(d => d.Id == id);
     }
+    public async Task<double?> GetAverageRatingAsync(Guid dishId)
+    {
+        // Check if the dish exists
+        var dishExists = await _context.Dishes.AnyAsync(d => d.Id == dishId);
+
+        if (!dishExists)
+        {
+            throw new KeyNotFoundException("Dish not found.");
+        }
+
+        // Retrieve all ratings for the dish
+        var ratings = await _context.Ratings
+            .Where(r => r.DishId == dishId)
+            .ToListAsync();
+
+        if (ratings.Count == 0)
+        {
+            return null; // No ratings yet
+        }
+
+        // Calculate and return the average score
+        return ratings.Average(r => r.Score);
+    }
+    public async Task SetRatingAsync(Guid dishId, int userId, int score)
+    {
+        var dishExists = await _context.Dishes.AnyAsync(d => d.Id == dishId);
+
+        if (!dishExists)
+        {
+            throw new KeyNotFoundException("Dish not found.");
+        }
+
+        // Check if the user has already rated this dish
+        var existingRating = await _context.Ratings.FirstOrDefaultAsync(r => r.DishId == dishId && r.UserId == userId);
+        if (existingRating != null)
+        {
+            throw new InvalidOperationException("User has already rated this dish.");
+        }
+
+        // Add new rating
+        var rating = new Rating
+        {
+            Id = Guid.NewGuid(),
+            DishId = dishId,
+            UserId = userId,
+            Score = score,
+            RatedAt = DateTime.UtcNow
+        };
+
+        _context.Ratings.Add(rating);
+        var new_rate = await GetAverageRatingAsync(dishId);  // to update the global dish rating
+        var dish = await _context.Dishes.FirstOrDefaultAsync(d => d.Id == dishId);
+        dish.Rating = new_rate;
+        await _context.SaveChangesAsync();
+    }
+
+
+
 }
