@@ -151,7 +151,7 @@ namespace Mahmoud_Restaurant.Controllers
                 }
                 else
                 {
-                    return NotFound("Dish does not exist");
+                    return NotFound("Dish does not exist"); //return 404
                 }
             }
             catch (Exception ex)
